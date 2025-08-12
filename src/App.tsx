@@ -4,7 +4,7 @@ function App() {
   const [message, setMessage] = useState('Loading...');
 
   useEffect(() => {
-    fetch('http://localhost:4000')
+    fetch('https://tma-backend-p1d4.onrender.com')
       .then(res => res.json())
       .then(data => setMessage(data.message))
       .catch(() => setMessage('Error fetching data'));
