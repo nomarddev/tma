@@ -1,4 +1,9 @@
 const fastify = require('fastify')({ logger: true });
+const cors = require('@fastify/cors');
+
+fastify.register(cors, {
+  origin: '*',
+});
 
 fastify.get('/', async (request, reply) => {
   return { message: 'Backend is working!' };
