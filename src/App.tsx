@@ -18,9 +18,12 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Взяли URL из env с fallback на localhost для разработки
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
   const fetchOrders = async () => {
     try {
-      const res = await fetch('http://localhost:4000/orders');
+      const res = await fetch(`${API_URL}/orders`);
       if (!res.ok) throw new Error('Failed to fetch orders');
       const data = await res.json();
       setOrders(data);
@@ -37,7 +40,7 @@ function App() {
 
   const addOrder = async (order: Order) => {
     try {
-      const res = await fetch('http://localhost:4000/orders', {
+      const res = await fetch(`${API_URL}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(order),
