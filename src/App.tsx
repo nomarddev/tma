@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import OrderForm from './components/OrderForm';
 
+// @ts-ignore — чтобы TypeScript не ругался на Telegram объект
+const tg = (window as any).Telegram?.WebApp;
+
 interface Order {
   id?: string;
   category: string;
@@ -17,10 +20,18 @@ function App() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
-  // Получаем URL бэка из переменной окружения VITE_API_URL
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
-  console.log("Using API_URL:", API_URL);
+  // API_URL меняем в зависимости от окружения
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    // Если приложение открыто внутри Telegram
+    if (tg?.initDataUnsafe?.user) {
+      setUser(tg.initDataUnsafe.user);
+      console.log("User from Telegram:", tg.initDataUnsafe.user);
+    }
+  }, []);
 
   const fetchOrders = async () => {
     try {
@@ -56,6 +67,12 @@ function App() {
 
   return (
     <div>
+      {user && (
+        <div>
+          <h3>Привет, {user.first_name}!</h3>
+          <p>Твой Telegram ID: {user.id}</p>
+        </div>
+      )}
       <h1>Список заказов</h1>
       <OrderForm onAddOrder={addOrder} />
       {loading && <p>Loading...</p>}

@@ -2,6 +2,9 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
+const { verifyTelegramAuth } = require("./utils/verifyTelegramAuth");
+
+
 const fastify = require('fastify')({ logger: true });
 const cors = require('@fastify/cors');
 const { createClient } = require('@supabase/supabase-js');
@@ -27,6 +30,17 @@ fastify.register(cors, {
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 });
+
+fastify.post("/auth", async (request, reply) => {
+  const { initData } = request.body;
+
+  if (!initData || !verifyTelegramAuth(initData)) {
+    return reply.code(403).send({ error: "Auth check failed" });
+  }
+
+  return { ok: true };
+});
+
 
 // CRUD API
 fastify.post('/orders', async (request, reply) => {
