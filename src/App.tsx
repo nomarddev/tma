@@ -20,7 +20,8 @@ function App() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ first_name?: string; last_name?: string } | null>(null);
+
 
   // API_URL меняем в зависимости от окружения
   const API_URL = import.meta.env.VITE_API_URL;
