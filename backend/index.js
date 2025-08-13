@@ -75,8 +75,6 @@ const start = async () => {
   }
 };
 
-const verifyTelegramAuth = require('./utils/verifyTelegramAuth');
-
 fastify.get('/me', async (request, reply) => {
   const initData = request.query.initData;
 
