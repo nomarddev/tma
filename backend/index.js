@@ -62,7 +62,11 @@ fastify.get('/orders', async () => {
   return data;
 });
 
-fastify.get('/', async () => ({ message: 'Backend is working!' }));
+fastify.get('/me', async (request, reply) => {
+  const initData = request.query.initData;
+  const user = verifyTelegramAuth(initData); // твоя функция проверки
+  return user; // { id, first_name, last_name, username }
+});
 
 const start = async () => {
   try {
