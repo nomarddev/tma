@@ -18,13 +18,15 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Взяли URL из env с fallback на localhost для разработки
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+  // Для Vite переменные приходят из import.meta.env и должны начинаться с VITE_
+  const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4000';
+  console.log('VITE_API_URL =', (import.meta as any).env?.VITE_API_URL);
+  console.log('Запрашиваем:', `${API_URL}/orders`);
 
   const fetchOrders = async () => {
     try {
       const res = await fetch(`${API_URL}/orders`);
-      if (!res.ok) throw new Error('Failed to fetch orders');
+      if (!res.ok) throw new Error(`Failed to fetch orders: ${res.status}`);
       const data = await res.json();
       setOrders(data);
     } catch (err: any) {
@@ -45,7 +47,7 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(order),
       });
-      if (!res.ok) throw new Error('Failed to add order');
+      if (!res.ok) throw new Error(`Failed to add order: ${res.status}`);
       const newOrder = await res.json();
       setOrders((prev) => [...prev, newOrder]);
     } catch (err: any) {
