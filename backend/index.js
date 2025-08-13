@@ -75,4 +75,28 @@ const start = async () => {
   }
 };
 
+const verifyTelegramAuth = require('./utils/verifyTelegramAuth');
+
+fastify.get('/me', async (request, reply) => {
+  const initData = request.query.initData;
+
+  if (!initData) {
+    return reply.code(400).send({ error: 'No initData provided' });
+  }
+
+  const user = verifyTelegramAuth(initData);
+  if (!user) {
+    return reply.code(401).send({ error: 'Invalid auth data' });
+  }
+
+  return { 
+    id: user.id,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    username: user.username,
+    photo_url: user.photo_url
+  };
+});
+
+
 start();

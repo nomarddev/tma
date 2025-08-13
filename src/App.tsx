@@ -26,12 +26,20 @@ function App() {
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    // Если приложение открыто внутри Telegram
-    if (tg?.initDataUnsafe?.user) {
-      setUser(tg.initDataUnsafe.user);
-      console.log("User from Telegram:", tg.initDataUnsafe.user);
-    }
-  }, []);
+  const tg = (window as any).Telegram?.WebApp;
+  const initData = tg?.initData;
+
+  if (initData) {
+    fetch(`${import.meta.env.VITE_API_URL}/me?initData=${encodeURIComponent(initData)}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log("User from backend:", data);
+        setUser(data);
+      })
+      .catch(err => console.error("Auth error:", err));
+  }
+}, []);
+
 
   const fetchOrders = async () => {
     try {
@@ -66,25 +74,20 @@ function App() {
   };
 
   return (
-    <div>
-      {user && (
-        <div>
-          <h3>Привет, {user.first_name}!</h3>
-          <p>Твой Telegram ID: {user.id}</p>
-        </div>
-      )}
-      <h1>Список заказов</h1>
-      <OrderForm onAddOrder={addOrder} />
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <ul>
-        {orders.map((order) => (
-          <li key={order.id}>
-            {order.category}: {order.description} — {order.reward} ₽
-          </li>
-        ))}
-      </ul>
-    </div>
+  <div>
+    {user && <p>Привет, {user.first_name}!</p>}
+    <h1>Список заказов</h1>
+    <OrderForm onAddOrder={addOrder} />
+    {loading && <p>Loading...</p>}
+    {error && <p style={{ color: 'red' }}>{error}</p>}
+    <ul>
+      {orders.map((order) => (
+        <li key={order.id}>
+          {order.category}: {order.description} — {order.reward} ₽
+        </li>
+      ))}
+    </ul>
+  </div>
   );
 }
 
